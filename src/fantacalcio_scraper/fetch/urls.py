@@ -22,3 +22,7 @@ def create_matchday_urls(
             for matchday in range(1, max_games + 1)
         ]
     return urls
+
+
+def create_matches_urls(matchday_url: str, match_urls: list[str]):
+    return [f'{matchday_url}/{match_url}/pagelle' for match_url in match_urls]
