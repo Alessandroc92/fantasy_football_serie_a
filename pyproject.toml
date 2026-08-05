@@ -1,0 +1,10 @@
+[project]
+name = "fantacalcio"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14.5"
+dependencies = [
+    "bs4>=0.0.2",
+    "niquests>=3.21.0",
+]
