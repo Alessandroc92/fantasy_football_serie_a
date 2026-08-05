@@ -1,0 +1,1 @@
+MAX_GAMES = 38
