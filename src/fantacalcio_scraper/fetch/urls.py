@@ -7,14 +7,14 @@ dotenv.load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
 
 
-def create_matchday_url(season: int, matchday: int):
+def create_matchday_url(season: int, matchday: int) -> str:
     matchday_url = f"calendario/{matchday}/{season - 1}-{season}"
     return urljoin(BASE_URL, matchday_url)
 
 
 def create_matchday_urls(
     start_season: int, end_season: int, max_games: int = config.MAX_GAMES
-):
+) -> list[str]:
     urls = []
     for season in range(start_season, end_season + 1):
         urls_generation = [
