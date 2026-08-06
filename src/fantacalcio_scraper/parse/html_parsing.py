@@ -5,13 +5,13 @@ from typing import Any
 from bs4 import BeautifulSoup
 
 
-def extract_match_urls(html: str) -> list[str]:
+def parse_match_urls(html: str) -> list[str]:
     bs = BeautifulSoup(html, "html.parser")
     options = bs.select("select#matchControl option")
     return [option.get("value") for option in options if option.get("value")]
 
 
-def extract_match_info(html: str) -> dict[Any]:
+def parse_match_info(html: str) -> dict[Any]:
     bs = BeautifulSoup(html, "html.parser")
     match_date = bs.select_one(".match-date meta").attrs["content"]
     match_time = bs.select_one(".match-date .hours").get_text()
@@ -26,7 +26,7 @@ def extract_match_info(html: str) -> dict[Any]:
     }
 
 
-def extract_player_ratings(html: str) -> list[dict[Any]]:
+def parse_player_ratings(html: str) -> list[dict[Any]]:
     bs = BeautifulSoup(html, "html.parser")
     player_infos = bs.find_all(class_="player-info")
     player_ratings = []
@@ -47,7 +47,7 @@ def extract_player_ratings(html: str) -> list[dict[Any]]:
     return player_ratings
 
 
-def extract_player_data(html: str) -> dict:
+def parse_player_data(html: str) -> dict:
     bs = BeautifulSoup(html, "html.parser")
     return {
         "player_name": bs.select_one(".h5.player-name").get_text(),
@@ -70,4 +70,4 @@ if __name__ == "__main__":
         "/Users/ale/Desktop/coding/projects/personal/fantacalcio/data/player_2.html"
     ) as file:
         html = file.read()
-    print(extract_player_data(html=html))
+    print(parse_player_data(html=html))
