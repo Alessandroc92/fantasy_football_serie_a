@@ -34,7 +34,7 @@ def parse_player_ratings(html: str) -> list[dict[Any]]:
         player_url = player.select_one(".player-name").attrs.get("href")
         bonus_malus = player.select(".icon.bonus-icon")
         player_ratings.append(
-            {
+            {   "player_url": player_url,
                 "player_id": re.search(r"/(\d{1,8})/", player_url).group(1),
                 "player_slug": re.search(r"/([a-z-]+)+/[0-9]+", player_url).group(1),
                 "player_team": re.search(r"/squadre/([a-z]+)/", player_url).group(1),
@@ -67,7 +67,7 @@ def parse_player_data(html: str) -> dict:
 
 if __name__ == "__main__":
     with open(
-        "/Users/ale/Desktop/coding/projects/personal/fantacalcio/data/player_2.html"
+        "/Users/ale/Desktop/coding/projects/personal/fantacalcio/data/ratings.html"
     ) as file:
         html = file.read()
-    print(parse_player_data(html=html))
+    print(parse_player_ratings(html=html))
