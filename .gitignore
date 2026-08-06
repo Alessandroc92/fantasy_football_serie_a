@@ -18,3 +18,5 @@ logs/
 
 # other files
 *.html
+data/
+.DS_Store
