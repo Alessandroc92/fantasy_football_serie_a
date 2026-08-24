@@ -8,6 +8,7 @@ dependencies = [
     "bs4>=0.0.2",
     "niquests>=3.21.0",
     "python-dotenv>=1.2.2",
+    "sqlmodel>=0.0.39",
 ]
 
 [build-system]
