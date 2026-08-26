@@ -57,7 +57,7 @@ def parse_player_ratings(html: str) -> list[dict[Any]]:
     return player_ratings
 
 
-def parse_player_data(html: str) -> dict:
+def parse_player_data(html: str) -> dict | None:
     bs = BeautifulSoup(html, "html.parser")
     try:
         return {
