@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from fantacalcio_scraper.db import db_engine
-from fantacalcio_scraper.db.models import Match, Player, Rating, Team
+from fantacalcio_scraper.db.models import Match, Player, Rating, Team, PlayerStats
 
 
 def save_data(session: Session, object_instance: object):
@@ -41,6 +41,11 @@ def save_player_data(
     with Session(bind=engine) as session:
         for player in player_data:
             save_data(session=session, object_instance=Player(**player))
+            team_query = select(Team.id).filter(
+                func.lower(Team.team_name) == func.lower(rating["player_team"])
+            )
+            player["team_id"] = session.exec(team_query).first()
+            save_data(session=session, object_instance=PlayerStats(**player))
 
 
 def save_player_ratings(
