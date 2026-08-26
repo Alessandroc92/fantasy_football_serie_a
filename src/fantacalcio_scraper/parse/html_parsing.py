@@ -62,6 +62,7 @@ def parse_player_data(html: str) -> dict | None:
     try:
         return {
             "name": bs.select_one(".h5.player-name").get_text(),
+            "fc_player_id": re.search(r"/(\d{1,8})/", player_url).group(1),
             "team": bs.select_one(".team-name.team-link meta").get("content"),
             "height": bs.select_one("dd[itemprop='height']").get_text(),
             "birthdate": bs.select_one(".birthdate").get_text(),
