@@ -11,7 +11,7 @@ def save_data(session: Session, object_instance: object):
     try:
         session.add(object_instance)
         session.commit()
-    except IntegrityError, UniqueViolation:
+    except (IntegrityError, UniqueViolation):
         session.rollback()
 
 
