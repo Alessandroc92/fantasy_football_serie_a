@@ -1,10 +1,9 @@
 import asyncio
-import pprint
 from itertools import chain
 
-from fantacalcio_scraper.fetch import fetcher, urls
-from fantacalcio_scraper.parse import html_parsing
-from fantacalcio_scraper.db import save_data
+from fantasy_football_scraper.db import save_data
+from fantasy_football_scraper.fetch import fetcher, urls
+from fantasy_football_scraper.parse import html_parsing
 
 
 async def extract_ratings(start_season: int, end_season: int):

@@ -1,17 +1,16 @@
+from fantasy_football_scraper.db import db_engine
+from fantasy_football_scraper.db.models import Match, Player, PlayerStats, Rating, Team
 from psycopg2.errors import UniqueViolation
 from sqlalchemy import Engine, func
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
-
-from fantacalcio_scraper.db import db_engine
-from fantacalcio_scraper.db.models import Match, Player, Rating, Team, PlayerStats
 
 
 def save_data(session: Session, object_instance: object):
     try:
         session.add(object_instance)
         session.commit()
-    except (IntegrityError, UniqueViolation):
+    except IntegrityError, UniqueViolation:
         session.rollback()
 
 
@@ -45,7 +44,9 @@ def save_player_data(
                 func.lower(Team.team_name) == func.lower(player["team"])
             )
             player["team_id"] = session.exec(team_query).first()
-            save_data(session=session, object_instance=PlayerStats.model_validate(player))
+            save_data(
+                session=session, object_instance=PlayerStats.model_validate(player)
+            )
 
 
 def save_player_ratings(

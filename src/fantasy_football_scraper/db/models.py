@@ -2,11 +2,10 @@ import datetime
 import re
 
 from dateutil import parser
+from fantasy_football_scraper import config
 from pydantic import field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Column, Field, SQLModel
-
-from fantacalcio_scraper import config
 
 
 class Team(SQLModel, table=True):

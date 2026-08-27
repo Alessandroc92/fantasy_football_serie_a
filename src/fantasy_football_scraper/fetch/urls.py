@@ -1,7 +1,8 @@
-from urllib.parse import urljoin
 import os
+from urllib.parse import urljoin
+
 import dotenv
-from fantacalcio_scraper import config
+from fantasy_football_scraper import config
 
 dotenv.load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
@@ -25,4 +26,4 @@ def create_matchday_urls(
 
 
 def create_matches_urls(matchday_url: str, match_urls: list[str]):
-    return [f'{matchday_url}/{match_url}/pagelle' for match_url in match_urls]
+    return [f"{matchday_url}/{match_url}/pagelle" for match_url in match_urls]

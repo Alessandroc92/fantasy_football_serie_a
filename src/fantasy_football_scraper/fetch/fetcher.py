@@ -1,8 +1,7 @@
 import asyncio
 
+from fantasy_football_scraper import config
 from niquests import AsyncResponse, AsyncSession
-
-from fantacalcio_scraper import config
 
 
 async def async_request(

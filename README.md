@@ -58,9 +58,9 @@ HTTP requests are performed asynchronously so that multiple match and player pag
 ## Project structure
 
 ```text
-fantacalcio/
+fantasy_football/
 ├── src/
-│   └── fantacalcio_scraper/
+│   └── fantasy_football_scraper/
 │       ├── config.py
 │       │
 │       ├── db/
@@ -197,8 +197,8 @@ Main Python dependencies include:
 Clone the repository:
 
 ```bash
-git clone https://github.com/Alessandroc92/fantacalcio.git
-cd fantacalcio
+git clone https://github.com/Alessandroc92/fantasy_football.git
+cd fantasy_football
 ```
 
 Install the dependencies:
@@ -228,7 +228,7 @@ DB_PASSWORD=your_password
 After creating the PostgreSQL database, generate the application tables with:
 
 ```bash
-uv run python -m fantacalcio_scraper.db.create_db
+uv run python -m fantasy_football_scraper.db.create_db
 ```
 
 SQLModel uses the models defined in `db/models.py` to create the required tables and relationships.
@@ -238,7 +238,7 @@ SQLModel uses the models defined in `db/models.py` to create the required tables
 The main extraction workflow is currently implemented in:
 
 ```python
-fantacalcio_scraper.services.ratings.extract_ratings
+fantasy_football_scraper.services.ratings.extract_ratings
 ```
 
 It can be called asynchronously:
@@ -246,7 +246,7 @@ It can be called asynchronously:
 ```python
 import asyncio
 
-from fantacalcio_scraper.services.ratings import extract_ratings
+from fantasy_football_scraper.services.ratings import extract_ratings
 
 
 asyncio.run(
