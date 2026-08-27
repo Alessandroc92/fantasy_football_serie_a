@@ -32,7 +32,7 @@ def save_match_info(match_info: list[dict], engine: Engine = db_engine.engine) -
                 Team.team_name == match_data.pop("away_team")
             )
             match_data["away_team_id"] = session.exec(at_query).first()
-            save_data(session=session, object_instance=Match(**match_data))
+            save_data(session=session, object_instance=Match.model_validate(match_data))
 
 
 def save_player_data(
@@ -40,12 +40,12 @@ def save_player_data(
 ) -> None:
     with Session(bind=engine) as session:
         for player in player_data:
-            save_data(session=session, object_instance=Player(**player))
+            save_data(session=session, object_instance=Player.model_validate(player))
             team_query = select(Team.id).filter(
-                func.lower(Team.team_name) == func.lower(rating["player_team"])
+                func.lower(Team.team_name) == func.lower(player["team"])
             )
             player["team_id"] = session.exec(team_query).first()
-            save_data(session=session, object_instance=PlayerStats(**player))
+            save_data(session=session, object_instance=PlayerStats.model_validate(player))
 
 
 def save_player_ratings(
@@ -54,7 +54,7 @@ def save_player_ratings(
     with Session(bind=engine) as session:
         for rating in player_ratings:
             team_query = select(Team.id).filter(
-                func.lower(Team.team_name) == func.lower(rating["player_team"])
+                func.lower(Team.team_name) == func.lower(rating["team"])
             )
             rating["team_id"] = session.exec(team_query).first()
-            save_data(session=session, object_instance=Rating(**rating))
+            save_data(session=session, object_instance=Rating.model_validate(rating))
