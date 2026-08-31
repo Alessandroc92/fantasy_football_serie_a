@@ -19,6 +19,7 @@ class Match(SQLModel, table=True):
     away_team_id: int = Field(foreign_key="team.id")
     home_score: int
     away_score: int
+    season: str
     match_date: datetime.datetime
 
 

@@ -7,31 +7,35 @@ from bs4 import BeautifulSoup
 
 def parse_match_urls(html: str) -> list[str]:
     bs = BeautifulSoup(html, "html.parser")
+    href = bs.select_one(".breadcrumbs > li:nth-child(4) a").get('href')
     options = bs.select("select#matchControl option")
     values = [option.get("value") for option in options if option.get("value")]
     paths = [
-        f"{m.group(1)}-{m.group(2)}/{m.group(3)}"
+        f"{href}/{m.group(1)}-{m.group(2)}/{m.group(3)}/pagelle"
         for m in (re.search(r"/?([a-zA-Z]+)/([a-zA-Z]+)/(\d{1,10})", v) for v in values)
         if m
     ]
     return paths
 
 
-def parse_match_info(html: str) -> dict[Any]:
+def parse_match_info(html: str) -> dict[Any] | None:
     bs = BeautifulSoup(html, "html.parser")
-    match_date = bs.select_one(".match-date meta").attrs["content"]
-    match_time = bs.select_one(".match-date .hours").get_text()
-    match_url = bs.select_one("select#matchControl option[selected]").get("value")
-    return {
-        "fc_match_id": re.search(r"/([0-9]+)", match_url).group(1),
-        "home_team": bs.select_one(".team-home a.team-name meta").get("content"),
-        "home_score": bs.select_one(".score-home").get_text(),
-        "away_score": bs.select_one(".score-away").get_text(),
-        "away_team": bs.select_one(".team-away a.team-name meta").get("content"),
-        "match_date": datetime.datetime.strptime(
-            f"{match_date} {match_time}", "%Y-%m-%d %H:%M"
-        ),
-    }
+    if bs.find_all(class_="player-info"):
+        match_date = bs.select_one(".match-date meta").attrs["content"]
+        match_time = bs.select_one(".match-date .hours").get_text()
+        match_url = bs.select_one("select#matchControl option[selected]").get("value")
+        season_url = bs.select_one(".breadcrumbs > li:nth-child(4) > a").get("href")
+        return {
+            "fc_match_id": re.search(r"/([0-9]+)", match_url).group(1),
+            "season":  re.search(r"/([0-9]{4}-[0-9]{4})", season_url).group(1),
+            "home_team": bs.select_one(".team-home a.team-name meta").get("content"),
+            "home_score": bs.select_one(".score-home").get_text(),
+            "away_score": bs.select_one(".score-away").get_text(),
+            "away_team": bs.select_one(".team-away a.team-name meta").get("content"),
+            "match_date": datetime.datetime.strptime(
+                f"{match_date} {match_time}", "%Y-%m-%d %H:%M"
+            ),
+        }
 
 
 def parse_player_ratings(html: str) -> list[dict[Any]]:
