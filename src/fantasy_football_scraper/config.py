@@ -1,5 +1,6 @@
 MAX_GAMES = 38
 POOL_MAXSIZE = 10
+TIMEOUT = 60
 ITALIAN_MONTHS_MAPPING = {
             'gen':'january',
             'feb':'february',
