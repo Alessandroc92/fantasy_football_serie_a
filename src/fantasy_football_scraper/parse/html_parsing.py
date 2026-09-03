@@ -24,10 +24,12 @@ def parse_match_info(html: str) -> dict[Any] | None:
         match_date = bs.select_one(".match-date meta").attrs["content"]
         match_time = bs.select_one(".match-date .hours").get_text()
         match_url = bs.select_one("select#matchControl option[selected]").get("value")
+        matchday_url = bs.select_one("select#matchweekControl option[selected]").get("value")
         season_url = bs.select_one(".breadcrumbs > li:nth-child(4) > a").get("href")
         return {
             "fc_match_id": re.search(r"/([0-9]+)", match_url).group(1),
             "season":  re.search(r"/([0-9]{4}-[0-9]{4})", season_url).group(1),
+            "matchday": re.search(r"([0-9]{1,2})", matchday_url).group(1),
             "home_team": bs.select_one(".team-home a.team-name meta").get("content"),
             "home_score": bs.select_one(".score-home").get_text(),
             "away_score": bs.select_one(".score-away").get_text(),
@@ -97,3 +99,10 @@ def parse_player_data(html: str) -> dict | None:
         }
     except Exception:
         return None
+
+
+if __name__ == '__main__':
+    file = 'data/ratings.html'
+    with open(file) as file:
+        r = file.read()
+    print(parse_match_info(html=r))

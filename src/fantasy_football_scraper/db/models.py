@@ -20,6 +20,7 @@ class Match(SQLModel, table=True):
     home_score: int
     away_score: int
     season: str
+    matchday: int
     match_date: datetime.datetime
 
 
