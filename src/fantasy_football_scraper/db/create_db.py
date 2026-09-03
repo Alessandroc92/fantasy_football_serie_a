@@ -1,4 +1,5 @@
 from fantasy_football_scraper.db import db_engine
+from fantasy_football_scraper.db import models
 from sqlalchemy import Engine
 from sqlmodel import SQLModel
 
