@@ -1,11 +1,20 @@
 import datetime
 import re
+from typing import Annotated, Union
 
 from dateutil import parser
-from fantasy_football_scraper import config
-from pydantic import field_validator
+from pydantic import BeforeValidator, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Column, Field, SQLModel
+
+from fantasy_football_scraper import config
+
+
+def validate_value(value: str):
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
 class Team(SQLModel, table=True):
@@ -72,9 +81,9 @@ class PlayerStats(SQLModel, table=True):
     team_id: int = Field(foreign_key="team.id")
     main_role: str
     specific_roles: list = Field(sa_column=Column(JSONB))
-    classic_value: int
-    classic_vfm: int
-    mantra_value: int
-    mantra_vfm: int
+    classic_value: Annotated[int | None, BeforeValidator(validate_value)]
+    classic_vfm: Annotated[int | None, BeforeValidator(validate_value)]
+    mantra_value: Annotated[int | None, BeforeValidator(validate_value)]
+    mantra_vfm: Annotated[int | None, BeforeValidator(validate_value)]
     season: int
     date: datetime.datetime = Field(default_factory=datetime.datetime.now)
