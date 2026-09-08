@@ -14,5 +14,4 @@ engine = create_engine(
         port=os.getenv("DB_PORT"),
         database=os.getenv("DB_NAME"),
     ),
-    echo=True
 )
