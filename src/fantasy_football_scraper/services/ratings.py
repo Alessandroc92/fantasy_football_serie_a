@@ -8,14 +8,17 @@ from fantasy_football_scraper.parse import html_parsing
 from fantasy_football_scraper import config
 
 
-
 async def extract_ratings(
     start_season: int,
     end_season: int,
+    matchday: int | None = None,
     n_matchdays: int = config.MAX_MATCHDAYS,
 ):
     matchday_urls = urls.create_matchday_urls(
-        start_season=start_season, end_season=end_season, n_matchdays=n_matchdays
+        start_season=start_season,
+        end_season=end_season,
+        n_matchdays=n_matchdays,
+        matchday=matchday,
     )
 
     matchday_responses = await fetcher.request_cycle(urls=matchday_urls)
@@ -26,6 +29,7 @@ async def extract_ratings(
             if response.status_code == 200
         )
     )
+    print(match_urls)
     match_responses = await fetcher.request_cycle(urls=match_urls)
 
     match_info = list(
@@ -68,8 +72,14 @@ async def extract_ratings(
 if __name__ == "__main__":
     start_season = 2027
     end_season = 2027
-    n_matchdays = 38
+    matchday = 3
+    n_matchdays = 3
     test = asyncio.run(
-        extract_ratings(start_season=start_season, end_season=end_season, n_matchdays=n_matchdays)
+        extract_ratings(
+            start_season=start_season,
+            end_season=end_season,
+            n_matchdays=n_matchdays,
+            matchday=matchday,
+        )
     )
     print(test)

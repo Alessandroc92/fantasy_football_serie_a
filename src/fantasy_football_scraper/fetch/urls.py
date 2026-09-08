@@ -14,13 +14,19 @@ def create_matchday_url(season: int, matchday: int) -> str:
 
 
 def create_matchday_urls(
-    start_season: int, end_season: int, n_matchdays: int = config.MAX_MATCHDAYS
+    start_season: int,
+    end_season: int,
+    matchday: int | None = None,
+    n_matchdays: int = config.MAX_MATCHDAYS,
 ) -> list[str]:
     urls = []
     for season in range(start_season, end_season + 1):
         urls_generation = [
             urls.append(create_matchday_url(season=season, matchday=matchday))
-            for matchday in range(1, n_matchdays + 1)
+            for matchday in range(
+                1 if not matchday else matchday,
+                n_matchdays + 1 if not matchday else matchday + 1,
+            )
         ]
     return urls
 
