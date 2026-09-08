@@ -48,11 +48,15 @@ def parse_player_ratings(html: str) -> list[dict[Any]]:
     for player in player_infos:
         player_url = player.select_one(".player-name").attrs.get("href")
         bonus_malus = player.select(".icon.bonus-icon")
+        try:
+            fc_player_id = re.search(r"/([0-9]+)/", player_url).group(1)
+        except AttributeError:
+            fc_player_id = re.search(r"/([0-9]+)", player_url).group(1)
         player_ratings.append(
             {
                 "url": player_url,
                 "fc_match_id": re.search(r"/([0-9]+)", match_url).group(1),
-                "fc_player_id": re.search(r"/(\d{1,8})/", player_url).group(1),
+                "fc_player_id": fc_player_id,
                 "slug": re.search(r"/([^/]+)/[0-9]+", player_url).group(1),
                 "team": re.search(r"/squadre/([a-z]+)/", player_url).group(1),
                 "rating": player.select_one(".badge.grade").get_text(),
@@ -67,7 +71,7 @@ def parse_player_ratings(html: str) -> list[dict[Any]]:
 def parse_player_data(html: str) -> dict | None:
     bs = BeautifulSoup(html, "html.parser")
     try:
-        player_url = bs.select_one(".player-name.player-link").get("href")
+        player_url = bs.select_one("meta[property='og:url']").get('content')
         return {
             "name": bs.select_one(".h5.player-name").get_text(),
             "slug": re.search(r"/([^/]+)/[0-9]+", player_url).group(1),
@@ -97,12 +101,12 @@ def parse_player_data(html: str) -> dict | None:
                 "li[title='FantaValore di Mercato (Mantra)'] .badge.badge-alternative"
             ).get_text(),
         }
-    except Exception:
+    except Exception as exe:
         return None
 
 
 if __name__ == '__main__':
-    file = 'data/ratings.html'
+    file = 'data/player_3.html'
     with open(file) as file:
         r = file.read()
-    print(parse_match_info(html=r))
+    print(parse_player_data(html=r))
