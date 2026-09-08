@@ -5,14 +5,19 @@ from itertools import chain
 from fantasy_football_scraper.db import save_data
 from fantasy_football_scraper.fetch import fetcher, urls
 from fantasy_football_scraper.parse import html_parsing
+from fantasy_football_scraper import config
 
 
 
-async def extract_ratings(start_season: int, end_season: int):
+async def extract_ratings(
+    start_season: int,
+    end_season: int,
+    n_matchdays: int = config.MAX_MATCHDAYS,
+):
     matchday_urls = urls.create_matchday_urls(
-        start_season=start_season, end_season=end_season, n_matchdays=2
+        start_season=start_season, end_season=end_season, n_matchdays=n_matchdays
     )
-    
+
     matchday_responses = await fetcher.request_cycle(urls=matchday_urls)
     match_urls = list(
         chain.from_iterable(
@@ -63,5 +68,8 @@ async def extract_ratings(start_season: int, end_season: int):
 if __name__ == "__main__":
     start_season = 2027
     end_season = 2027
-    test = asyncio.run(extract_ratings(start_season=start_season, end_season=end_season))
+    n_matchdays = 38
+    test = asyncio.run(
+        extract_ratings(start_season=start_season, end_season=end_season, n_matchdays=n_matchdays)
+    )
     print(test)
