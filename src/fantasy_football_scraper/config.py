@@ -10,7 +10,7 @@ ITALIAN_MONTHS_MAPPING = {
             'giu':'june',
             'lug':'july',
             'ago':'august',
-            'set':'semptember',
+            'set':'september',
             'ott': 'october',
             'nov':'november',
             'dic':'december'
