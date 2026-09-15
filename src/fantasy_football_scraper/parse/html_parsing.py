@@ -40,10 +40,12 @@ def parse_match_info(html: str) -> dict[Any] | None:
         }
 
 
-def parse_player_ratings(player_info: list[str], match_url: str) -> list[dict[Any]]:
+def parse_player_ratings(html: str) -> list[dict[Any]]:
+    bs = BeautifulSoup(html, "html.parser")
+    player_infos = bs.find_all(class_="player-info")
+    match_url = bs.select_one("select#matchControl option[selected]").get("value")
     player_ratings = []
-    for player in player_info:
-        player = BeautifulSoup(player, 'html.parser')
+    for player in player_infos:
         player_url = player.select_one(".player-name").attrs.get("href")
         bonus_malus = player.select(".icon.bonus-icon")
         try:
@@ -104,7 +106,9 @@ def parse_player_data(html: str) -> dict | None:
 
 
 if __name__ == '__main__':
-    file = 'data/player_3.html'
+    file = 'data/ratings_5.html'
     with open(file) as file:
-        r = file.read()
-    print(parse_player_data(html=r))
+        html = file.read()
+    result = parse_player_ratings(html=html)
+    print(result)
+    print(len(result))

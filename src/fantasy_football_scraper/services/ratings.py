@@ -37,7 +37,7 @@ def extract_match_info(match_responses: list[str]) -> list[dict]:
         filter(
             None,
             [
-                html_parsing.parse_match_info(match_response[0])
+                html_parsing.parse_match_info(match_response)
                 for match_response in match_responses
             ],
         )
@@ -52,10 +52,10 @@ def extract_teams(match_info: list[dict]) -> set[str]:
     return teams
 
 
-def extract_player_ratings(match_responses: list[tuple]) -> list[dict]:
+def extract_player_ratings(match_responses: list[str]) -> list[dict]:
     player_ratings = list(
         chain.from_iterable(
-                html_parsing.parse_player_ratings(match_response[1])
+                html_parsing.parse_player_ratings(match_response)
                 for match_response in match_responses
         )
     )
