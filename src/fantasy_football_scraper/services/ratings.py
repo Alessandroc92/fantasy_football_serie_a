@@ -5,7 +5,7 @@ from niquests import AsyncResponse
 
 from fantasy_football_scraper import config
 from fantasy_football_scraper.db import save_data
-from fantasy_football_scraper.fetch import fetcher, urls
+from fantasy_football_scraper.fetch import fetcher, urls, browser_fetch
 from fantasy_football_scraper.parse import html_parsing
 
 
@@ -32,12 +32,12 @@ async def extract_match_urls(
     return match_urls
 
 
-def extract_match_info(match_responses: list[AsyncResponse]) -> list[dict]:
+def extract_match_info(match_responses: list[str]) -> list[dict]:
     match_info = list(
         filter(
             None,
             [
-                html_parsing.parse_match_info(match_response.text)
+                html_parsing.parse_match_info(match_response[0])
                 for match_response in match_responses
             ],
         )
@@ -52,10 +52,10 @@ def extract_teams(match_info: list[dict]) -> set[str]:
     return teams
 
 
-def extract_player_ratings(match_responses: list[AsyncResponse]) -> list[dict]:
+def extract_player_ratings(match_responses: list[tuple]) -> list[dict]:
     player_ratings = list(
         chain.from_iterable(
-                html_parsing.parse_player_ratings(match_response.text)
+                html_parsing.parse_player_ratings(match_response[1])
                 for match_response in match_responses
         )
     )
@@ -77,6 +77,7 @@ def extract_player_data(player_responses: list[AsyncResponse]) -> list[dict]:
 
 
 async def run_extraction_pipeline(
+    driver_path: str,
     start_season: int,
     end_season: int,
     matchday: int | None = None,
@@ -88,7 +89,7 @@ async def run_extraction_pipeline(
         matchday=matchday,
         n_matchdays=n_matchdays,
     )
-    match_responses = await fetcher.request_cycle(urls=match_urls)
+    match_responses = await browser_fetch.async_browsers(urls=match_urls, driver_path=driver_path)
     match_info = extract_match_info(match_responses)
     teams = extract_teams(match_info)
     player_ratings = extract_player_ratings(match_responses)
@@ -111,12 +112,14 @@ async def run_extraction_pipeline(
 
 
 if __name__ == "__main__":
+    driver_path = browser_fetch.resolve_driver_path()
     start_season = 2027
     end_season = 2027
-    matchday = 3
+    matchday = 4
     n_matchdays = 3
     recap = asyncio.run(
         run_extraction_pipeline(
+            driver_path=driver_path,
             start_season=start_season,
             end_season=end_season,
             n_matchdays=n_matchdays,
