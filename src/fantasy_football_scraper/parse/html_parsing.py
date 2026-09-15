@@ -40,12 +40,10 @@ def parse_match_info(html: str) -> dict[Any] | None:
         }
 
 
-def parse_player_ratings(html: str) -> list[dict[Any]]:
-    bs = BeautifulSoup(html, "html.parser")
-    player_infos = bs.find_all(class_="player-info")
-    match_url = bs.select_one("select#matchControl option[selected]").get("value")
+def parse_player_ratings(player_info: list[str], match_url: str) -> list[dict[Any]]:
     player_ratings = []
-    for player in player_infos:
+    for player in player_info:
+        player = BeautifulSoup(player, 'html.parser')
         player_url = player.select_one(".player-name").attrs.get("href")
         bonus_malus = player.select(".icon.bonus-icon")
         try:
