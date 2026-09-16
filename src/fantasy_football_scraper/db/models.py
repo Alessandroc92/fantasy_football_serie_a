@@ -5,7 +5,7 @@ from typing import Annotated, Union
 from dateutil import parser
 from pydantic import BeforeValidator, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Column, Field, SQLModel
+from sqlmodel import Column, Field, SQLModel, UniqueConstraint
 
 from fantasy_football_scraper import config
 
@@ -34,6 +34,14 @@ class Match(SQLModel, table=True):
 
 
 class Rating(SQLModel, table=True):
+
+    __table_args__ = (
+        UniqueConstraint(
+            "fc_match_id",
+            "fc_player_id",
+            name="unique_player_rating",
+        ),
+    )
     id: int | None = Field(primary_key=True, default=None)
     fc_match_id: int = Field(foreign_key="match.fc_match_id")
     fc_player_id: int = Field(foreign_key="player.fc_player_id")
@@ -85,5 +93,5 @@ class PlayerStats(SQLModel, table=True):
     classic_vfm: Annotated[int | None, BeforeValidator(validate_value)]
     mantra_value: Annotated[int | None, BeforeValidator(validate_value)]
     mantra_vfm: Annotated[int | None, BeforeValidator(validate_value)]
-    season: int
+    season: str
     date: datetime.datetime = Field(default_factory=datetime.datetime.now)
