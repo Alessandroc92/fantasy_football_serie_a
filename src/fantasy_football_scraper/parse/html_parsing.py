@@ -3,6 +3,7 @@ import re
 from typing import Any
 
 from bs4 import BeautifulSoup
+import traceback
 
 
 def parse_match_urls(html: str) -> list[str]:
@@ -72,12 +73,20 @@ def parse_player_data(html: str) -> dict | None:
     bs = BeautifulSoup(html, "html.parser")
     try:
         player_url = bs.select_one("meta[property='og:url']").get('content')
+        title = bs.select_one('title').get_text()
+        try:
+            season = re.search(r"([0-9]{4}-[0-9]{4})", title).group(1)   
+            fc_player_id = re.search(r"/([0-9]+)/", player_url).group(1)
+        except AttributeError:
+            string = re.search(r"([0-9]{4})/([0-9]{2})", title)
+            season = f"{string.group(1)}-20{string.group(2)}"
+            fc_player_id = re.search(r"/([0-9]+)", player_url).group(1)
         return {
             "name": bs.select_one(".h5.player-name").get_text(),
             "slug": re.search(r"/([^/]+)/[0-9]+", player_url).group(1),
-            "fc_player_id": re.search(r"/([0-9]{1,10})/", player_url).group(1),
+            "fc_player_id": fc_player_id,
             "team": bs.select_one(".team-name.team-link meta").get("content"),
-            "season": re.search(r"-([0-9]{4})", player_url).group(1),
+            "season": season,
             "height": bs.select_one("dd[itemprop='height']").get_text(),
             "birthdate": bs.select_one(".birthdate").get_text(),
             "foot": bs.select_one(
