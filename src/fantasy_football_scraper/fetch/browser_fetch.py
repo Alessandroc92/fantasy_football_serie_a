@@ -1,13 +1,23 @@
 import asyncio
 from itertools import chain
+import threading
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.selenium_manager import SeleniumManager
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from fantasy_football_scraper import config
+
+from concurrent.futures import ThreadPoolExecutor
+
+selenium_executor = ThreadPoolExecutor(
+    max_workers=config.MAX_CONCURRENT_BROWSERS,
+    thread_name_prefix="selenium"
+)
 
 
 def resolve_driver_path() -> str:
@@ -16,7 +26,11 @@ def resolve_driver_path() -> str:
 
 
 def create_driver(driver_path: str):
-    service = Service(driver_path)
+    service = Service(driver_path,
+    log_output="logs/chromedriver.log",
+    service_args=["--verbose"],
+    popen_kw={"close_fds": False},
+)
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
     return webdriver.Chrome(
@@ -26,7 +40,11 @@ def create_driver(driver_path: str):
 
 
 def extract_parsed_html(driver) -> str:
-    driver.find_element(By.ID, "disagree-btn").click()
+    button = WebDriverWait(
+        driver, config.SELENIUM_STANDARD_TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "disagree-btn"))
+            )
+    button.click()
 
     soup = BeautifulSoup(driver.page_source, "html.parser")
     visible_ids = set()
@@ -59,30 +77,9 @@ def browser_extraction(driver_path: str, url: str) -> str:
 
 
 async def async_browsers(urls: list[str], driver_path: str):
-    semaphore = asyncio.Semaphore(config.MAX_CONCURRENT_BROWSERS)
+    loop = asyncio.get_running_loop()
 
     async def run(url):
-        async with semaphore:
-            return await asyncio.to_thread(browser_extraction, driver_path, url)
+        return await loop.run_in_executor(selenium_executor, browser_extraction, driver_path, url)
 
     return await asyncio.gather(*(run(url) for url in urls))
-
-
-if __name__ == "__main__":
-    driver_path = resolve_driver_path()
-    urls = [
-        "https://www.fantacalcio.it/serie-a/calendario/3/2026-27/inter-napoli/17980/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Genoa-Frosinone/17987/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Lazio-Milan/17989/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Atalanta-Cagliari/17985/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Lecce-Monza/17990/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Napoli-Bologna/17991/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Sassuolo-Juventus/17992/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Como-Parma/17986/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Torino-Roma/17993/pagelle",
-        # "https://www.fantacalcio.it/serie-a/calendario/4/2026-2027/Inter-Udinese/17988/pagelle",
-    ]
-
-    res = asyncio.run(async_browsers(urls=urls, driver_path=driver_path))
-    with open('data/ratings_5.html', 'w') as file:
-        file.write(res[0])
