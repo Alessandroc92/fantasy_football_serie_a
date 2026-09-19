@@ -47,12 +47,17 @@ class Rating(SQLModel, table=True):
     fc_player_id: int = Field(foreign_key="player.fc_player_id")
     team_id: int = Field(foreign_key="team.id")
     rating: float
-    bonus_malus: list[dict] | list[None] = Field(sa_column=Column(JSONB))
+    bonus_malus: dict | None = Field(sa_column=Column(JSONB))
 
     @field_validator("rating", mode="before")
     @classmethod
     def validate_rating(cls, value: str) -> float:
         return float(value.replace(",", "."))
+    
+    @field_validator("bonus_malus", mode="before")
+    @classmethod
+    def validate_bonus_malus(cls, values: list[dict] | list[None]):
+        return {key:val for dictionary in values for key,val in dictionary.items()}
 
 
 class Player(SQLModel, table=True):
