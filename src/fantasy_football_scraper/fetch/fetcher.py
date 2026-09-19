@@ -13,13 +13,14 @@ async def async_request(
     for _ in range(config.MAX_CLIENT_REQUESTS):
         try:
             return await session.get(url)
-        except Exception:
+        except Exception as exe:
             await asyncio.sleep(2)
 
 
 async def request_cycle(
     urls: list[str],
-    proxies: str | None = None,
+    dict: str | None = None,
+    proxies: dict | None = None,
 ) -> list[AsyncResponse]:
 
     async with AsyncSession(
