@@ -22,7 +22,9 @@ async def extract_match_urls(
         n_matchdays=n_matchdays,
         matchday=matchday,
     )
-    matchday_responses = await fetcher.request_cycle(urls=matchday_urls)
+    matchday_responses = await fetcher.request_cycle(
+        urls=matchday_urls,
+    )
     match_urls = list(
         chain.from_iterable(
             html_parsing.parse_match_urls(response.text)
@@ -115,9 +117,9 @@ async def run_extraction_pipeline(
 
 if __name__ == "__main__":
     driver_path = browser_fetch.resolve_driver_path()
-    start_season = 2016
-    end_season = 2016
-    matchday = None
+    start_season = 2027
+    end_season = 2027
+    matchday = 6
     n_matchdays = 38
     recap = asyncio.run(
         run_extraction_pipeline(
