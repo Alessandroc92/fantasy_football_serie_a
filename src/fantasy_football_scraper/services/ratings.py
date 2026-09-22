@@ -113,20 +113,3 @@ async def run_extraction_pipeline(
         "players": len(player_data),
         "ratings": len(player_ratings),
     }
-
-
-if __name__ == "__main__":
-    driver_path = browser_fetch.resolve_driver_path()
-    start_season = 2027
-    end_season = 2027
-    matchday = 6
-    n_matchdays = 38
-    recap = asyncio.run(
-        run_extraction_pipeline(
-            driver_path=driver_path,
-            start_season=start_season,
-            end_season=end_season,
-            n_matchdays=n_matchdays,
-            matchday=matchday,
-        )
-    )
